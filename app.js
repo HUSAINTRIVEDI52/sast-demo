@@ -14,8 +14,17 @@ app.get("/user", (req, res) => {
     const username = req.query.username;
 
     // ❌ REAL SQL Injection Sink
-    const query = "SELECT * FROM users WHERE username = '" + username + "'";
-
+connection.execute(
+    "SELECT * FROM users WHERE username = ?",
+    [username],
+    (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Error");
+        }
+        res.json(results);
+    }
+);
     connection.query(query, (err, results) => {
         if (err) {
             console.error(err);
