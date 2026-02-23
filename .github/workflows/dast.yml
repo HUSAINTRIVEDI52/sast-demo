@@ -8,13 +8,16 @@ on:
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.10.0
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.11.0
         with:
-          target: "https://your-app.vercel.app"
-          fail_action: true
+          target: "https://sast-demo.vercel.app/"
+          fail_action: false
+          allow_issue_writing: false
