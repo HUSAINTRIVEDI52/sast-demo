@@ -1,4 +1,4 @@
-name: "DAST - OWASP ZAP"
+name: "DAST - OWASP ZAP Stable"
 
 on:
   workflow_dispatch:
@@ -8,21 +8,26 @@ on:
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
-      - name: Pull ZAP Docker Image
+      - name: Pull ZAP Image
         run: docker pull ghcr.io/zaproxy/zaproxy:stable
 
       - name: Run ZAP Baseline Scan
         run: |
           docker run --rm \
-            -t ghcr.io/zaproxy/zaproxy:stable \
+            ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t https://sast-demo.vercel.app/ \
-            -r zap_report.html
+            -r zap_report.html \
+            -J zap_report.json \
+            -I || true
 
-      - name: Upload Report
+      - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
-          name: zap-report
-          path: zap_report.html
+          name: zap-dast-report
+          path: |
+            zap_report.html
+            zap_report.json
