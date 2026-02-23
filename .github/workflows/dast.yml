@@ -10,11 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Pull ZAP Docker Image
+        run: docker pull ghcr.io/zaproxy/zaproxy:stable
 
-      - name: ZAP Full Scan
-        uses: zaproxy/action-full-scan@v0.4.0
+      - name: Run ZAP Baseline Scan
+        run: |
+          docker run --rm \
+            -t ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
+            -t https://sast-demo.vercel.app/ \
+            -r zap_report.html
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
         with:
-          target: "https://sast-demo.vercel.app/"
-          fail_action: false
+          name: zap-report
+          path: zap_report.html
